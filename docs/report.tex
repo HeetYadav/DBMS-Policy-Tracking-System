@@ -1,0 +1,1246 @@
+% ============================================================
+%  Policy and Rule Change Tracking System
+%  IEEE Conference Format — DBMS Project Report
+%  Author : Heet Yadav | Nirma University | 2CS518IC24
+% ============================================================
+\documentclass[conference]{IEEEtran}
+
+% ---------- Packages ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{geometry}
+
+% ---------- Page Geometry (IEEE column) ----------
+\geometry{letterpaper}
+
+% ---------- SQL Listings Style ----------
+\definecolor{sqlbg}{HTML}{1E1E2E}
+\definecolor{sqlkw}{HTML}{CBA6F7}
+\definecolor{sqlstr}{HTML}{A6E3A1}
+\definecolor{sqlcmt}{HTML}{6C7086}
+\definecolor{sqltbl}{HTML}{89DCEB}
+\definecolor{sqlnum}{HTML}{FAB387}
+\definecolor{sqltxt}{HTML}{CDD6F4}
+
+\lstdefinelanguage{OracleSQL}{
+  morekeywords={SELECT,FROM,WHERE,JOIN,LEFT,INNER,ON,GROUP,BY,ORDER,HAVING,
+                INSERT,UPDATE,DELETE,SET,INTO,VALUES,AND,OR,NOT,IN,AS,DISTINCT,
+                COUNT,MAX,MIN,AVG,SUM,ROUND,TO\_CHAR,TO\_DATE,TO\_TIMESTAMP,COMMIT,
+                CREATE,TABLE,PRIMARY,KEY,FOREIGN,REFERENCES,INT,VARCHAR2,VARCHAR,
+                DATE,TIMESTAMP,CHAR,NULL,IS,LIKE},
+  sensitive=false,
+  morestring=[b]',
+  morecomment=[l]{--}
+}
+
+\lstdefinestyle{sqlstyle}{
+  language=OracleSQL,
+  backgroundcolor=\color{sqlbg},
+  basicstyle=\ttfamily\footnotesize\color{sqltxt},
+  keywordstyle=\color{sqlkw}\bfseries,
+  stringstyle=\color{sqlstr},
+  commentstyle=\color{sqlcmt}\itshape,
+  numberstyle=\tiny\color{sqlcmt},
+  breakatwhitespace=false,
+  breaklines=true,
+  keepspaces=true,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  tabsize=4,
+  frame=single,
+  rulecolor=\color{sqlcmt},
+  xleftmargin=4pt,
+  xrightmargin=4pt,
+  framexleftmargin=4pt,
+  numbers=left,
+  stepnumber=1
+}
+
+% ---------- Caption Setup ----------
+\captionsetup{font=small, labelfont=bf}
+
+% ============================================================
+\begin{document}
+
+% ---------- Title ----------
+\title{Policy and Rule Change Tracking System: A Relational Database Design for Corporate Governance Audit}
+
+\author{
+  \IEEEauthorblockN{Heet Yadav}
+  \IEEEauthorblockA{
+    \textit{3rd Year, Electronics and Communication Engineering}\\
+    \textit{Nirma University, Ahmedabad, India}\\
+    \texttt{23bec101@nirmauni.ac.in}
+  }
+  \and
+  \IEEEauthorblockN{Prof. Chandan Trivedi}
+  \IEEEauthorblockA{
+    \textit{Course Coordinator, 2CS518IC24}\\
+    \textit{Database Management Systems}\\
+    \textit{Nirma University, Ahmedabad, India}
+  }
+}
+
+\maketitle
+
+% ============================================================
+% ABSTRACT
+% ============================================================
+\begin{abstract}
+In modern organizations, corporate policies govern operations, compliance, and employee conduct. However, managing the lifecycle of these policies—tracking who created them, what changed, when changes were made, and who approved them—poses a significant challenge to data integrity and organizational transparency. This paper presents the design and implementation of a relational database system titled \textit{Policy and Rule Change Tracking System}, developed as part of the Database Management Systems course (2CS518IC24) at Nirma University. The system models a normalized, seven-table schema in Third Normal Form (3NF), enabling comprehensive audit trails, approval workflows, and version history for corporate policies. Using Oracle SQL, 20 functional queries demonstrate the system's capability to support Data Manipulation (DML), multi-table joins, aggregation, and subquery-based reporting. The design enforces referential integrity through foreign key constraints, ensuring cascading consistency across Departments, Users, Categories, Policies, Versions, Change History, and Approvals.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Database Management Systems, Relational Database, Policy Tracking, Version Control, Oracle SQL, Third Normal Form, Referential Integrity, Audit Trail
+\end{IEEEkeywords}
+
+% ============================================================
+% I. INTRODUCTION
+% ============================================================
+\section{Introduction}
+
+Organizations of all sizes rely on formal policies to regulate employee behavior, ensure legal compliance, and enforce operational standards. As policies evolve over time—due to regulatory changes, organizational restructuring, or lessons learned—maintaining a clear record of every version, modification, and approval becomes critical for audit and governance purposes.
+
+The \textbf{Policy and Rule Change Tracking System} addresses this challenge by providing a structured relational database that captures the complete lifecycle of a corporate policy. The core problem statement is:
+
+\begin{quote}
+\textit{Design a relational database schema capable of tracking the creation, versioning, modification, and approval of corporate policies across multiple departments, while preserving full historical audit trails and enforcing referential integrity.}
+\end{quote}
+
+The objectives of this project are:
+\begin{itemize}
+  \item To design a normalized (3NF) relational schema for policy lifecycle management.
+  \item To implement Data Definition Language (DDL) scripts creating seven interrelated tables.
+  \item To populate the database with representative sample data via Data Manipulation Language (DML).
+  \item To demonstrate system functionality through 20 SQL queries covering SELECT, JOIN, aggregation, subqueries, UPDATE, and DELETE operations.
+  \item To enforce referential integrity through properly defined foreign key constraints.
+\end{itemize}
+
+The remainder of this paper is organized as follows: Section II presents the Entity-Relationship (ER) diagram; Section III describes the database schema (DDL); Section IV covers data population (DML); Section V presents and analyzes the 20 functional queries; and Section VI concludes with observations on normalization and data integrity.
+
+% ============================================================
+% II. ER DIAGRAM
+% ============================================================
+\section{Entity-Relationship Diagram}
+
+The conceptual model of the system is captured in the ER diagram shown in Fig.~\ref{fig:erdiagram}. The diagram depicts seven entities and their associations:
+
+\begin{figure}[H]
+  \centering
+  % Replace with your actual ER diagram image file:
+  % \includegraphics[width=\columnwidth]{er_diagram.png}
+  \fbox{\parbox{0.9\columnwidth}{\centering\vspace{2cm}
+    \textit{[ER Diagram — Insert er\_diagram.png here]}\\
+    \vspace{2cm}
+  }}
+  \caption{Entity-Relationship Diagram for the Policy and Rule Change Tracking System.}
+  \label{fig:erdiagram}
+\end{figure}
+
+\subsection{Key Relationships}
+
+\begin{itemize}
+  \item \textbf{Departments $\to$ Users (1:N)}: A department employs many users. Each user belongs to exactly one department (\texttt{DEPT\_ID} FK in \texttt{Users}).
+  \item \textbf{Departments $\to$ Policies (1:N)}: A department owns many policies. Each policy is owned by exactly one department (\texttt{DEPT\_ID} FK in \texttt{Policies}).
+  \item \textbf{Categories $\to$ Policies (1:N)}: A category classifies many policies. Each policy belongs to one category (\texttt{Category\_ID} FK in \texttt{Policies}).
+  \item \textbf{Users $\to$ Policies (1:N)}: A user (as creator) may create many policies (\texttt{Created\_By} FK in \texttt{Policies}).
+  \item \textbf{Policies $\to$ PolicyVersions (1:N)}: Each policy has one or more version records capturing incremental changes (\texttt{Policy\_ID} FK in \texttt{PolicyVersions}).
+  \item \textbf{Policies $\to$ ChangeHistory (1:N)}: Each policy accumulates many change-log entries over its lifecycle (\texttt{Policy\_ID} FK in \texttt{ChangeHistory}).
+  \item \textbf{Policies $\to$ Approvals (1:N)}: Each policy may receive multiple approval decisions across versions (\texttt{Policy\_ID} FK in \texttt{Approvals}).
+  \item \textbf{PolicyVersions $\to$ ChangeHistory (1:N)}: Each version is associated with one or more change history records.
+  \item \textbf{PolicyVersions $\to$ Approvals (1:N)}: Each version may be subject to separate approval decisions.
+  \item \textbf{Users $\to$ Approvals (1:N)}: A user in the Auditor role acts as approver for many policies.
+\end{itemize}
+
+All relationships are implemented as referential integrity constraints (foreign keys) in the physical schema.
+
+% ============================================================
+% III. DATABASE SCHEMA (DDL)
+% ============================================================
+\section{Database Schema (DDL)}
+
+The physical schema consists of seven tables designed to Third Normal Form (3NF). Tables are ordered by their dependency hierarchy: parent tables are created before child tables to satisfy foreign key constraints.
+
+\subsection{Departments}
+\begin{lstlisting}[style=sqlstyle, caption={DDL: Departments table}]
+CREATE TABLE Departments (
+    DEPT_ID    INT PRIMARY KEY,
+    DEPT_NAME  VARCHAR2(100),
+    DEPT_HEAD  VARCHAR2(100),
+    CREATED_AT DATE
+);
+\end{lstlisting}
+
+\subsection{Users}
+\begin{lstlisting}[style=sqlstyle, caption={DDL: Users table}]
+CREATE TABLE Users (
+    USER_ID    INT PRIMARY KEY,
+    USERNAME   VARCHAR2(50),
+    EMAIL      VARCHAR2(100),
+    ROLE       VARCHAR2(50),
+    DEPT_ID    INT,
+    CREATED_AT DATE,
+    FOREIGN KEY (DEPT_ID) REFERENCES Departments(DEPT_ID)
+);
+\end{lstlisting}
+
+\subsection{Categories}
+\begin{lstlisting}[style=sqlstyle, caption={DDL: Categories table}]
+CREATE TABLE Categories (
+    Category_ID   INT PRIMARY KEY,
+    Category_Name VARCHAR2(100),
+    Description   VARCHAR2(255)
+);
+\end{lstlisting}
+
+\subsection{Policies}
+\begin{lstlisting}[style=sqlstyle, caption={DDL: Policies table}]
+CREATE TABLE Policies (
+    Policy_ID      INT PRIMARY KEY,
+    Policy_Name    VARCHAR2(150),
+    Category_ID    INT,
+    DEPT_ID        INT,
+    Status         VARCHAR2(20),
+    Created_By     INT,
+    Effective_Date DATE,
+    FOREIGN KEY (Category_ID)
+        REFERENCES Categories(Category_ID),
+    FOREIGN KEY (DEPT_ID)
+        REFERENCES Departments(DEPT_ID),
+    FOREIGN KEY (Created_By)
+        REFERENCES Users(USER_ID)
+);
+\end{lstlisting}
+
+\subsection{PolicyVersions}
+\begin{lstlisting}[style=sqlstyle, caption={DDL: PolicyVersions table}]
+CREATE TABLE PolicyVersions (
+    Version_ID     INT PRIMARY KEY,
+    Policy_ID      INT,
+    Version_Number VARCHAR2(10),
+    Changes_Made   VARCHAR2(1000),
+    Modified_By    INT,
+    Modified_At    TIMESTAMP,
+    Is_Current     CHAR(1),
+    FOREIGN KEY (Policy_ID)
+        REFERENCES Policies(Policy_ID),
+    FOREIGN KEY (Modified_By)
+        REFERENCES Users(USER_ID)
+);
+\end{lstlisting}
+
+\subsection{ChangeHistory}
+\begin{lstlisting}[style=sqlstyle, caption={DDL: ChangeHistory table}]
+CREATE TABLE ChangeHistory (
+    Change_ID   INT PRIMARY KEY,
+    Policy_ID   INT,
+    Version_ID  INT,
+    Type        VARCHAR2(50),
+    Description VARCHAR2(1000),
+    Changed_By  INT,
+    Changed_At  TIMESTAMP,
+    FOREIGN KEY (Policy_ID)
+        REFERENCES Policies(Policy_ID),
+    FOREIGN KEY (Version_ID)
+        REFERENCES PolicyVersions(Version_ID),
+    FOREIGN KEY (Changed_By)
+        REFERENCES Users(USER_ID)
+);
+\end{lstlisting}
+
+\subsection{Approvals}
+\begin{lstlisting}[style=sqlstyle, caption={DDL: Approvals table}]
+CREATE TABLE Approvals (
+    Approval_ID   INT PRIMARY KEY,
+    Policy_ID     INT,
+    Version_ID    INT,
+    Approver_ID   INT,
+    Status        VARCHAR2(20),
+    Comments      VARCHAR2(1000),
+    Approval_Date DATE,
+    FOREIGN KEY (Policy_ID)
+        REFERENCES Policies(Policy_ID),
+    FOREIGN KEY (Version_ID)
+        REFERENCES PolicyVersions(Version_ID),
+    FOREIGN KEY (Approver_ID)
+        REFERENCES Users(USER_ID)
+);
+\end{lstlisting}
+
+% ============================================================
+% IV. DATA POPULATION (DML)
+% ============================================================
+\section{Data Population (DML)}
+
+The database is seeded with representative sample data: 5 Departments, 7 Users, 5 Categories, 8 Policies, 12 Policy Versions, 16 Change History entries, and 11 Approval records.
+
+\subsection{Departments (5 rows)}
+\begin{lstlisting}[style=sqlstyle, caption={DML: INSERT INTO Departments}]
+INSERT INTO Departments VALUES
+  (1,'Human Resources','Heet Yadav',
+   TO_DATE('15-JAN-23','DD-MON-YY'));
+INSERT INTO Departments VALUES
+  (2,'Finance','Harshil Kanani',
+   TO_DATE('10-FEB-23','DD-MON-YY'));
+INSERT INTO Departments VALUES
+  (3,'Legal','Kevin Hingu',
+   TO_DATE('05-MAR-23','DD-MON-YY'));
+INSERT INTO Departments VALUES
+  (4,'Information Technology','Om Jani',
+   TO_DATE('20-APR-23','DD-MON-YY'));
+INSERT INTO Departments VALUES
+  (5,'Operations','Gauri Mathur',
+   TO_DATE('12-MAY-23','DD-MON-YY'));
+\end{lstlisting}
+
+\subsection{Users (7 rows)}
+\begin{lstlisting}[style=sqlstyle, caption={DML: INSERT INTO Users}]
+INSERT INTO Users VALUES
+  (101,'heety','heety@company.com','Admin',1,
+   TO_DATE('01-JUN-23','DD-MON-YY'));
+INSERT INTO Users VALUES
+  (102,'harshilk','harshilk@company.com',
+   'Policy Manager',2,
+   TO_DATE('15-JUN-23','DD-MON-YY'));
+INSERT INTO Users VALUES
+  (103,'kevinh','kevinh@company.com','Auditor',3,
+   TO_DATE('10-JUL-23','DD-MON-YY'));
+INSERT INTO Users VALUES
+  (104,'gaurim','gaurim@company.com','Viewer',5,
+   TO_DATE('22-JUL-23','DD-MON-YY'));
+INSERT INTO Users VALUES
+  (105,'omj','omj@company.com',
+   'Policy Manager',4,
+   TO_DATE('05-AUG-23','DD-MON-YY'));
+INSERT INTO Users VALUES
+  (106,'hetp','hetp@company.com','Viewer',1,
+   TO_DATE('18-AUG-23','DD-MON-YY'));
+INSERT INTO Users VALUES
+  (107,'garvitj','garvitj@company.com','Auditor',3,
+   TO_DATE('30-SEP-23','DD-MON-YY'));
+\end{lstlisting}
+
+\subsection{Categories (5 rows)}
+\begin{lstlisting}[style=sqlstyle, caption={DML: INSERT INTO Categories}]
+INSERT INTO Categories VALUES
+  (10,'Security','Data protection and cyber safety rules');
+INSERT INTO Categories VALUES
+  (20,'Finance','Budgeting and expense reporting');
+INSERT INTO Categories VALUES
+  (30,'Compliance','Regulatory and legal adherence');
+INSERT INTO Categories VALUES
+  (40,'Operations','Daily workflow and logistics');
+INSERT INTO Categories VALUES
+  (50,'HR','Employee conduct and benefits');
+\end{lstlisting}
+
+\subsection{Policies (8 rows)}
+\begin{lstlisting}[style=sqlstyle, caption={DML: INSERT INTO Policies}]
+INSERT INTO Policies VALUES
+  (501,'Data Privacy Policy',10,4,'Active',105,
+   TO_DATE('01-JAN-24','DD-MON-YY'));
+INSERT INTO Policies VALUES
+  (502,'Travel Reimbursement',20,2,'Active',102,
+   TO_DATE('15-FEB-24','DD-MON-YY'));
+INSERT INTO Policies VALUES
+  (503,'Code of Conduct',50,1,'Active',101,
+   TO_DATE('10-MAR-24','DD-MON-YY'));
+INSERT INTO Policies VALUES
+  (504,'Remote Work Policy',50,1,'Draft',101,
+   TO_DATE('01-OCT-24','DD-MON-YY'));
+INSERT INTO Policies VALUES
+  (505,'Network Access Rule',10,4,'Active',105,
+   TO_DATE('20-MAY-24','DD-MON-YY'));
+INSERT INTO Policies VALUES
+  (506,'Anti-Money Laundering',30,3,'Archived',103,
+   TO_DATE('01-JAN-22','DD-MON-YY'));
+INSERT INTO Policies VALUES
+  (507,'Safety Protocols',40,5,'Active',104,
+   TO_DATE('15-JUN-24','DD-MON-YY'));
+INSERT INTO Policies VALUES
+  (508,'Vendor Management',30,3,'Draft',107,
+   TO_DATE('01-NOV-24','DD-MON-YY'));
+\end{lstlisting}
+
+\subsection{PolicyVersions (12 rows)}
+\begin{lstlisting}[style=sqlstyle, caption={DML: INSERT INTO PolicyVersions}]
+INSERT INTO PolicyVersions VALUES
+  (1001,501,'1.0','Initial Release',105,
+   TO_TIMESTAMP('2023-12-01 09:00:00',
+   'YYYY-MM-DD HH24:MI:SS'),'N');
+INSERT INTO PolicyVersions VALUES
+  (1002,501,'1.1','Updated Encryption',105,
+   TO_TIMESTAMP('2024-01-01 10:30:00',
+   'YYYY-MM-DD HH24:MI:SS'),'Y');
+INSERT INTO PolicyVersions VALUES
+  (1003,502,'1.0','Initial policy',102,
+   TO_TIMESTAMP('2024-02-10 14:00:00',
+   'YYYY-MM-DD HH24:MI:SS'),'Y');
+INSERT INTO PolicyVersions VALUES
+  (1004,503,'1.0','Initial policy',101,
+   TO_TIMESTAMP('2024-03-01 08:45:00',
+   'YYYY-MM-DD HH24:MI:SS'),'N');
+INSERT INTO PolicyVersions VALUES
+  (1005,503,'2.0','Social media section added',101,
+   TO_TIMESTAMP('2024-03-10 11:00:00',
+   'YYYY-MM-DD HH24:MI:SS'),'Y');
+INSERT INTO PolicyVersions VALUES
+  (1006,504,'1.0','Drafting phase',101,
+   TO_TIMESTAMP('2024-09-25 16:00:00',
+   'YYYY-MM-DD HH24:MI:SS'),'Y');
+INSERT INTO PolicyVersions VALUES
+  (1007,505,'1.0','Initial Rule set',105,
+   TO_TIMESTAMP('2024-05-15 09:20:00',
+   'YYYY-MM-DD HH24:MI:SS'),'Y');
+INSERT INTO PolicyVersions VALUES
+  (1008,506,'1.0','Legacy rules',103,
+   TO_TIMESTAMP('2021-12-15 10:00:00',
+   'YYYY-MM-DD HH24:MI:SS'),'Y');
+INSERT INTO PolicyVersions VALUES
+  (1009,507,'1.0','Workplace safety basics',104,
+   TO_TIMESTAMP('2024-06-01 13:00:00',
+   'YYYY-MM-DD HH24:MI:SS'),'Y');
+INSERT INTO PolicyVersions VALUES
+  (1010,508,'1.0','Vendor criteria',107,
+   TO_TIMESTAMP('2024-10-20 15:30:00',
+   'YYYY-MM-DD HH24:MI:SS'),'Y');
+INSERT INTO PolicyVersions VALUES
+  (1011,501,'1.2','GDPR compliance clause',105,
+   TO_TIMESTAMP('2024-02-01 10:00:00',
+   'YYYY-MM-DD HH24:MI:SS'),'N');
+INSERT INTO PolicyVersions VALUES
+  (1012,503,'2.1','Clarified dress code',101,
+   TO_TIMESTAMP('2024-03-20 12:00:00',
+   'YYYY-MM-DD HH24:MI:SS'),'N');
+\end{lstlisting}
+
+\subsection{ChangeHistory (16 rows)}
+\begin{lstlisting}[style=sqlstyle, caption={DML: INSERT INTO ChangeHistory}]
+INSERT INTO ChangeHistory VALUES
+  (201,501,1002,'Update','Encryption upgrade',105,
+   TO_TIMESTAMP('2024-01-01 10:00:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (202,501,1011,'Revision','GDPR alignment',105,
+   TO_TIMESTAMP('2024-02-01 09:00:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (203,503,1005,'Major Update','Social media addition',101,
+   TO_TIMESTAMP('2024-03-10 10:30:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (204,503,1012,'Minor Update','Dress code change',101,
+   TO_TIMESTAMP('2024-03-20 11:30:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (205,502,1003,'Creation','New Policy Setup',102,
+   TO_TIMESTAMP('2024-02-10 14:00:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (206,504,1006,'Draft','Internal Review',101,
+   TO_TIMESTAMP('2024-09-25 16:00:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (207,505,1007,'Creation','Rule Established',105,
+   TO_TIMESTAMP('2024-05-15 09:20:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (208,507,1009,'Creation','Safety Guidelines',104,
+   TO_TIMESTAMP('2024-06-01 13:00:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (209,508,1010,'Draft','Procurement Check',107,
+   TO_TIMESTAMP('2024-10-20 15:30:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (210,501,1001,'Creation','Base policy',105,
+   TO_TIMESTAMP('2023-12-01 09:00:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (211,503,1004,'Creation','Base policy',101,
+   TO_TIMESTAMP('2024-03-01 08:45:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (212,506,1008,'Legacy','System migration',103,
+   TO_TIMESTAMP('2021-12-15 10:00:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (213,501,1002,'Security','Firewall rules',105,
+   TO_TIMESTAMP('2024-01-05 10:00:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (214,502,1003,'Finance','Rate change',102,
+   TO_TIMESTAMP('2024-02-20 09:00:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (215,503,1005,'Legal','Ethics update',103,
+   TO_TIMESTAMP('2024-03-15 14:00:00','YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO ChangeHistory VALUES
+  (216,507,1009,'Logistics','Emergency update',104,
+   TO_TIMESTAMP('2024-06-10 11:00:00','YYYY-MM-DD HH24:MI:SS'));
+\end{lstlisting}
+
+\subsection{Approvals (11 rows)}
+\begin{lstlisting}[style=sqlstyle, caption={DML: INSERT INTO Approvals}]
+INSERT INTO Approvals VALUES
+  (301,501,1002,103,'Approved','Security standards met',
+   TO_DATE('01-JAN-24','DD-MON-YY'));
+INSERT INTO Approvals VALUES
+  (302,502,1003,103,'Approved','Finance review clear',
+   TO_DATE('14-FEB-24','DD-MON-YY'));
+INSERT INTO Approvals VALUES
+  (303,503,1005,107,'Approved','Guidelines verified',
+   TO_DATE('09-MAR-24','DD-MON-YY'));
+INSERT INTO Approvals VALUES
+  (304,504,1006,103,'Pending','Legal review pending',
+   TO_DATE('05-OCT-24','DD-MON-YY'));
+INSERT INTO Approvals VALUES
+  (305,505,1007,103,'Approved','IT check passed',
+   TO_DATE('18-MAY-24','DD-MON-YY'));
+INSERT INTO Approvals VALUES
+  (306,508,1010,107,'Pending','Under review',
+   TO_DATE('01-NOV-24','DD-MON-YY'));
+INSERT INTO Approvals VALUES
+  (307,501,1011,103,'Rejected','Missing clause 4',
+   TO_DATE('05-FEB-24','DD-MON-YY'));
+INSERT INTO Approvals VALUES
+  (308,503,1012,107,'Approved','Minor change accepted',
+   TO_DATE('21-MAR-24','DD-MON-YY'));
+INSERT INTO Approvals VALUES
+  (309,501,1001,103,'Approved','Initial approval',
+   TO_DATE('05-DEC-23','DD-MON-YY'));
+INSERT INTO Approvals VALUES
+  (310,503,1004,107,'Approved','Ready for draft',
+   TO_DATE('05-MAR-24','DD-MON-YY'));
+INSERT INTO Approvals VALUES
+  (311,507,1009,103,'Approved','Safety compliance met',
+   TO_DATE('12-JUN-24','DD-MON-YY'));
+COMMIT;
+\end{lstlisting}
+
+% ============================================================
+% V. FUNCTIONAL QUERIES
+% ============================================================
+\section{Functional Queries}
+
+This section presents all 20 functional SQL queries, each with its objective, SQL code, and expected output derived from the populated sample data.
+
+% -------------------------------------------------------
+% Query 1
+% -------------------------------------------------------
+\subsection{Query 1: Update Policy Status (DML)}
+
+\textbf{Objective:} Promote the \textit{Remote Work Policy} (ID~504) from \texttt{Draft} to \texttt{Active} status, signifying official approval and enforcement.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 1: UPDATE Policy Status}]
+-- Query 1: Update Policy Status (DML)
+UPDATE Policies
+    SET Status = 'Active'
+    WHERE Policy_ID = 504;
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 1 Expected Output (Before / After)}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{POLICY\_ID} & \textbf{POLICY\_NAME} & \textbf{STATUS} \\
+\hline
+504 (BEFORE) & Remote Work Policy & Draft \\
+504 (AFTER)  & Remote Work Policy & \textbf{Active} \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 2
+% -------------------------------------------------------
+\subsection{Query 2: Cascading Delete of Archived Policies (DML)}
+
+\textbf{Objective:} Safely remove all data associated with policies that are \texttt{Archived} and effective before Jan 1, 2023, respecting foreign-key dependency order (Approvals $\to$ ChangeHistory $\to$ PolicyVersions $\to$ Policies).
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 2: Cascading DELETE}]
+-- Query 2: Cascading Delete (DML)
+DELETE FROM Approvals
+    WHERE Policy_ID IN (
+        SELECT Policy_ID FROM Policies
+        WHERE Status = 'Archived'
+        AND Effective_Date < TO_DATE('01-JAN-23','DD-MON-YY'));
+
+DELETE FROM ChangeHistory
+    WHERE Policy_ID IN (
+        SELECT Policy_ID FROM Policies
+        WHERE Status = 'Archived'
+        AND Effective_Date < TO_DATE('01-JAN-23','DD-MON-YY'));
+
+DELETE FROM PolicyVersions
+    WHERE Policy_ID IN (
+        SELECT Policy_ID FROM Policies
+        WHERE Status = 'Archived'
+        AND Effective_Date < TO_DATE('01-JAN-23','DD-MON-YY'));
+
+DELETE FROM Policies
+    WHERE Status = 'Archived'
+    AND Effective_Date < TO_DATE('01-JAN-23','DD-MON-YY');
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 2 Expected Output — Rows Deleted}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{TABLE} & \textbf{ROWS DELETED} & \textbf{REASON} \\
+\hline
+Approvals       & 1 (Approval\_ID 309)   & Linked to Policy 506 \\
+ChangeHistory   & 1 (Change\_ID 212)     & Linked to Policy 506 \\
+PolicyVersions  & 1 (Version\_ID 1008)   & Linked to Policy 506 \\
+Policies        & 1 (Policy\_ID 506)     & Anti-Money Laundering \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 3
+% -------------------------------------------------------
+\subsection{Query 3: List All Active Policies}
+
+\textbf{Objective:} Retrieve all policies currently in \texttt{Active} status — the primary governance view for enforceable policies.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 3: Active Policies}]
+SELECT Policy_Name, Status,
+       TO_CHAR(Effective_Date,'DD-MON-YY') AS Effective_Date
+    FROM Policies
+    WHERE Status = 'Active';
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 3 Expected Output}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{POLICY\_NAME} & \textbf{STATUS} & \textbf{EFFECTIVE\_DATE} \\
+\hline
+Data Privacy Policy  & Active & 01-JAN-24 \\
+Travel Reimbursement & Active & 15-FEB-24 \\
+Code of Conduct      & Active & 10-MAR-24 \\
+Network Access Rule  & Active & 20-MAY-24 \\
+Safety Protocols     & Active & 15-JUN-24 \\
+Remote Work Policy   & Active & 01-OCT-24 \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 4
+% -------------------------------------------------------
+\subsection{Query 4: Security Category Policies}
+
+\textbf{Objective:} Join Policies with Categories to retrieve all policies classified under the \texttt{Security} category, used for IT compliance audits.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 4: Security Policies (JOIN)}]
+SELECT P.Policy_Name, C.Category_Name
+    FROM Policies P
+    JOIN Categories C ON P.Category_ID = C.Category_ID
+    WHERE C.Category_Name = 'Security';
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 4 Expected Output}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{POLICY\_NAME} & \textbf{CATEGORY\_NAME} \\
+\hline
+Data Privacy Policy & Security \\
+Network Access Rule & Security \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 5
+% -------------------------------------------------------
+\subsection{Query 5: Recent Change History (2024+)}
+
+\textbf{Objective:} Fetch all change-log entries recorded from January 1, 2024 onwards — the primary audit-trail query for recent policy activity.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 5: Change History Since 2024}]
+SELECT Change_ID, Type, Description,
+       TO_CHAR(Changed_At,'DD-MON-YY') AS Change_Date
+    FROM ChangeHistory
+    WHERE Changed_At >= TO_TIMESTAMP(
+        '2024-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS');
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 5 Expected Output (13 rows)}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{CHANGE\_ID} & \textbf{TYPE} & \textbf{DESCRIPTION} & \textbf{DATE} \\
+\hline
+201 & Update       & Encryption upgrade      & 01-JAN-24 \\
+202 & Revision     & GDPR alignment          & 01-FEB-24 \\
+203 & Major Update & Social media addition   & 10-MAR-24 \\
+204 & Minor Update & Dress code change       & 20-MAR-24 \\
+205 & Creation     & New Policy Setup        & 10-FEB-24 \\
+206 & Draft        & Internal Review         & 25-SEP-24 \\
+207 & Creation     & Rule Established        & 15-MAY-24 \\
+208 & Creation     & Safety Guidelines       & 01-JUN-24 \\
+209 & Draft        & Procurement Check       & 20-OCT-24 \\
+213 & Security     & Firewall rules          & 05-JAN-24 \\
+214 & Finance      & Rate change             & 20-FEB-24 \\
+215 & Legal        & Ethics update           & 15-MAR-24 \\
+216 & Logistics    & Emergency update        & 10-JUN-24 \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 6
+% -------------------------------------------------------
+\subsection{Query 6: Policies with Department and Creator}
+
+\textbf{Objective:} A multi-table join linking Policies, Departments, and Users to produce an ownership report — who created each policy and in which department.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 6: Policy Ownership (Multi-JOIN)}]
+SELECT P.Policy_Name, D.DEPT_NAME,
+       U.USERNAME AS Created_By
+    FROM Policies P
+    JOIN Departments D ON P.DEPT_ID = D.DEPT_ID
+    JOIN Users U ON P.Created_By = U.USER_ID;
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 6 Expected Output}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{POLICY\_NAME} & \textbf{DEPT\_NAME} & \textbf{CREATED\_BY} \\
+\hline
+Data Privacy Policy    & Information Technology & omj      \\
+Travel Reimbursement   & Finance                & harshilk \\
+Code of Conduct        & Human Resources        & heety    \\
+Remote Work Policy     & Human Resources        & heety    \\
+Network Access Rule    & Information Technology & omj      \\
+Anti-Money Laundering  & Legal                  & kevinh   \\
+Safety Protocols       & Operations             & gaurim   \\
+Vendor Management      & Legal                  & garvitj  \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 7
+% -------------------------------------------------------
+\subsection{Query 7: Policy Version History}
+
+\textbf{Objective:} Join PolicyVersions with Users to display the full version timeline — what changed in each version and who made the modification.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 7: Version History (JOIN)}]
+SELECT PV.Version_Number, PV.Changes_Made,
+       U.USERNAME AS Modified_By
+    FROM PolicyVersions PV
+    JOIN Users U ON PV.Modified_By = U.USER_ID;
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 7 Expected Output (12 rows)}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{VERSION} & \textbf{CHANGES\_MADE} & \textbf{MODIFIED\_BY} \\
+\hline
+1.0 & Initial Release            & omj      \\
+1.1 & Updated Encryption         & omj      \\
+1.0 & Initial policy             & harshilk \\
+1.0 & Initial policy             & heety    \\
+2.0 & Social media section added & heety    \\
+1.0 & Drafting phase             & heety    \\
+1.0 & Initial Rule set           & omj      \\
+1.0 & Legacy rules               & kevinh   \\
+1.0 & Workplace safety basics    & gaurim   \\
+1.0 & Vendor criteria            & garvitj  \\
+1.2 & GDPR compliance clause     & omj      \\
+2.1 & Clarified dress code       & heety    \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 8
+% -------------------------------------------------------
+\subsection{Query 8: Approvals with Approver Names}
+
+\textbf{Objective:} Join Approvals, Policies, and Users to produce a complete approval audit report — which policies were approved, rejected, or pending, and by whom.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 8: Approvals Audit (Multi-JOIN)}]
+SELECT P.Policy_Name, A.Status,
+       U.USERNAME AS Approver
+    FROM Approvals A
+    JOIN Policies P ON A.Policy_ID = P.Policy_ID
+    JOIN Users U ON A.Approver_ID = U.USER_ID;
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 8 Expected Output (11 rows)}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{POLICY\_NAME} & \textbf{STATUS} & \textbf{APPROVER} \\
+\hline
+Data Privacy Policy   & Approved & kevinh  \\
+Travel Reimbursement  & Approved & kevinh  \\
+Code of Conduct       & Approved & garvitj \\
+Remote Work Policy    & Pending  & kevinh  \\
+Network Access Rule   & Approved & kevinh  \\
+Vendor Management     & Pending  & garvitj \\
+Data Privacy Policy   & Rejected & kevinh  \\
+Code of Conduct       & Approved & garvitj \\
+Data Privacy Policy   & Approved & kevinh  \\
+Code of Conduct       & Approved & garvitj \\
+Safety Protocols      & Approved & kevinh  \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 9
+% -------------------------------------------------------
+\subsection{Query 9: Category, Department, and Policy Cross-Map}
+
+\textbf{Objective:} A three-way join producing a cross-reference map of categories, departments, and policies for organizational governance reporting.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 9: Cross-Map (Multi-JOIN)}]
+SELECT C.Category_Name, D.DEPT_NAME, P.Policy_Name
+    FROM Policies P
+    JOIN Categories C ON P.Category_ID = C.Category_ID
+    JOIN Departments D ON P.DEPT_ID = D.DEPT_ID;
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 9 Expected Output}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{CATEGORY} & \textbf{DEPT\_NAME} & \textbf{POLICY\_NAME} \\
+\hline
+Security    & Information Technology & Data Privacy Policy   \\
+Finance     & Finance                & Travel Reimbursement  \\
+HR          & Human Resources        & Code of Conduct       \\
+HR          & Human Resources        & Remote Work Policy    \\
+Security    & Information Technology & Network Access Rule   \\
+Compliance  & Legal                  & Anti-Money Laundering \\
+Operations  & Operations             & Safety Protocols      \\
+Compliance  & Legal                  & Vendor Management     \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 10
+% -------------------------------------------------------
+\subsection{Query 10: Change History with Actor Names}
+
+\textbf{Objective:} Fully annotated change log replacing FK IDs with human-readable names — showing which policy changed, the type of change, and who made it.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 10: Change Log with Names (Multi-JOIN)}]
+SELECT P.Policy_Name, CH.Type, CH.Description,
+       U.USERNAME AS Changed_By
+    FROM ChangeHistory CH
+    JOIN Policies P ON CH.Policy_ID = P.Policy_ID
+    JOIN Users U ON CH.Changed_By = U.USER_ID;
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 10 Expected Output (16 rows)}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{POLICY\_NAME} & \textbf{TYPE} & \textbf{DESCRIPTION} & \textbf{BY} \\
+\hline
+Data Privacy Policy   & Update       & Encryption upgrade    & omj      \\
+Data Privacy Policy   & Revision     & GDPR alignment        & omj      \\
+Code of Conduct       & Major Update & Social media addition & heety    \\
+Code of Conduct       & Minor Update & Dress code change     & heety    \\
+Travel Reimbursement  & Creation     & New Policy Setup      & harshilk \\
+Remote Work Policy    & Draft        & Internal Review       & heety    \\
+Network Access Rule   & Creation     & Rule Established      & omj      \\
+Safety Protocols      & Creation     & Safety Guidelines     & gaurim   \\
+Vendor Management     & Draft        & Procurement Check     & garvitj  \\
+Data Privacy Policy   & Creation     & Base policy           & omj      \\
+Code of Conduct       & Creation     & Base policy           & heety    \\
+Anti-Money Laundering & Legacy       & System migration      & kevinh   \\
+Data Privacy Policy   & Security     & Firewall rules        & omj      \\
+Travel Reimbursement  & Finance      & Rate change           & harshilk \\
+Code of Conduct       & Legal        & Ethics update         & kevinh   \\
+Safety Protocols      & Logistics    & Emergency update      & gaurim   \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 11
+% -------------------------------------------------------
+\subsection{Query 11: Policy Count by Status}
+
+\textbf{Objective:} Group policies by lifecycle status and count each group — giving management an instant portfolio health snapshot.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 11: Policy Count by Status (GROUP BY)}]
+SELECT Status, COUNT(*) AS Total_Policies
+    FROM Policies
+    GROUP BY Status;
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 11 Expected Output}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{STATUS} & \textbf{TOTAL\_POLICIES} \\
+\hline
+Active   & 6 \\
+Draft    & 2 \\
+Archived & 1 \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 12
+% -------------------------------------------------------
+\subsection{Query 12: Policy Count per Department}
+
+\textbf{Objective:} LEFT JOIN ensures every department appears even with zero policies — providing a complete workload distribution report.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 12: Count by Department (LEFT JOIN + GROUP BY)}]
+SELECT D.DEPT_NAME,
+       COUNT(P.Policy_ID) AS Policy_Count
+    FROM Departments D
+    LEFT JOIN Policies P ON D.DEPT_ID = P.DEPT_ID
+    GROUP BY D.DEPT_NAME;
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 12 Expected Output}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{DEPT\_NAME} & \textbf{POLICY\_COUNT} \\
+\hline
+Human Resources        & 2 \\
+Finance                & 1 \\
+Legal                  & 2 \\
+Information Technology & 2 \\
+Operations             & 1 \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 13
+% -------------------------------------------------------
+\subsection{Query 13: Average Versions per Policy}
+
+\textbf{Objective:} Compute the version count per policy via a subquery, then average those counts to measure average documentation depth.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 13: Avg Versions (AVG + Subquery)}]
+SELECT ROUND(AVG(v_count), 2) AS Avg_Versions
+    FROM (
+        SELECT COUNT(*) AS v_count
+            FROM PolicyVersions
+            GROUP BY Policy_ID
+    );
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 13 Expected Output}
+\begin{tabular}{|l|}
+\hline
+\textbf{AVG\_VERSIONS} \\
+\hline
+1.5 \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 14
+% -------------------------------------------------------
+\subsection{Query 14: Top Approvers by Activity}
+
+\textbf{Objective:} Count and rank approvals by user in descending order — identifying the most active approvers for workload analysis.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 14: Top Approvers (GROUP BY + ORDER BY)}]
+SELECT U.USERNAME,
+       COUNT(A.Approval_ID) AS Total_Approvals
+    FROM Users U
+    JOIN Approvals A ON U.USER_ID = A.Approver_ID
+    GROUP BY U.USERNAME
+    ORDER BY COUNT(A.Approval_ID) DESC;
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 14 Expected Output}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{USERNAME} & \textbf{TOTAL\_APPROVALS} \\
+\hline
+kevinh  & 7 \\
+garvitj & 4 \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 15
+% -------------------------------------------------------
+\subsection{Query 15: Policies per Category}
+
+\textbf{Objective:} Group policies by category to show how many exist in each governance domain — for category-level reporting.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 15: Policies per Category (JOIN + GROUP BY)}]
+SELECT C.Category_Name,
+       COUNT(P.Policy_ID) AS Total_Policies
+    FROM Categories C
+    JOIN Policies P ON C.Category_ID = P.Category_ID
+    GROUP BY C.Category_Name;
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 15 Expected Output}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{CATEGORY\_NAME} & \textbf{TOTAL\_POLICIES} \\
+\hline
+Security    & 2 \\
+Finance     & 1 \\
+Compliance  & 2 \\
+Operations  & 1 \\
+HR          & 2 \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 16
+% -------------------------------------------------------
+\subsection{Query 16: Policies with Multiple Versions}
+
+\textbf{Objective:} Use a subquery with HAVING to identify policies revised more than once — flagging high-change policies for stability review.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 16: Multi-Version Policies (Subquery + HAVING)}]
+SELECT Policy_Name
+    FROM Policies
+    WHERE Policy_ID IN (
+        SELECT Policy_ID
+            FROM PolicyVersions
+            GROUP BY Policy_ID
+            HAVING COUNT(*) > 1
+    );
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 16 Expected Output}
+\begin{tabular}{|l|}
+\hline
+\textbf{POLICY\_NAME} \\
+\hline
+Data Privacy Policy \\
+Code of Conduct     \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 17
+% -------------------------------------------------------
+\subsection{Query 17: Users with Pending Approvals}
+
+\textbf{Objective:} Identify users who have outstanding pending approvals — used to follow up and unblock the policy approval pipeline.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 17: Pending Approvers (Subquery)}]
+SELECT USERNAME, EMAIL
+    FROM Users
+    WHERE USER_ID IN (
+        SELECT Approver_ID
+            FROM Approvals
+            WHERE Status = 'Pending'
+    );
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 17 Expected Output}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{USERNAME} & \textbf{EMAIL} \\
+\hline
+kevinh  & kevinh@company.com  \\
+garvitj & garvitj@company.com \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 18
+% -------------------------------------------------------
+\subsection{Query 18: Departments with No Active Policy}
+
+\textbf{Objective:} Use a NOT IN subquery to find departments lacking active policies — highlighting governance gaps.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 18: Governance Gaps (NOT IN Subquery)}]
+SELECT DEPT_NAME
+    FROM Departments
+    WHERE DEPT_ID NOT IN (
+        SELECT DEPT_ID
+            FROM Policies
+            WHERE Status = 'Active'
+    );
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 18 Expected Output}
+\begin{tabular}{|l|}
+\hline
+\textbf{DEPT\_NAME} \\
+\hline
+Legal \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 19
+% -------------------------------------------------------
+\subsection{Query 19: Latest Version per Policy}
+
+\textbf{Objective:} Use MAX on version numbers grouped by policy to quickly identify the most recent version of every policy.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 19: Latest Versions (GROUP BY + MAX)}]
+SELECT Policy_ID,
+       MAX(Version_Number) AS Latest_Version
+    FROM PolicyVersions
+    GROUP BY Policy_ID;
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 19 Expected Output}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{POLICY\_ID} & \textbf{LATEST\_VERSION} \\
+\hline
+501 & 1.2 \\
+502 & 1.0 \\
+503 & 2.1 \\
+504 & 1.0 \\
+505 & 1.0 \\
+506 & 1.0 \\
+507 & 1.0 \\
+508 & 1.0 \\
+\hline
+\end{tabular}
+\end{table}
+
+% -------------------------------------------------------
+% Query 20
+% -------------------------------------------------------
+\subsection{Query 20: Policies with Rejected Approvals}
+
+\textbf{Objective:} Find all distinct policies that have had at least one approval rejected — identifying non-compliant policies requiring revision before re-submission.
+
+\begin{lstlisting}[style=sqlstyle, caption={Query 20: Rejected Policies (DISTINCT + Subquery)}]
+SELECT DISTINCT Policy_Name
+    FROM Policies
+    WHERE Policy_ID IN (
+        SELECT Policy_ID
+            FROM Approvals
+            WHERE Status = 'Rejected'
+    );
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Query 20 Expected Output}
+\begin{tabular}{|l|}
+\hline
+\textbf{POLICY\_NAME} \\
+\hline
+Data Privacy Policy \\
+\hline
+\end{tabular}
+\end{table}
+
+% ============================================================
+% VI. CONCLUSION
+% ============================================================
+\section{Conclusion}
+
+This project successfully demonstrates the design and implementation of a normalized relational database for tracking the complete lifecycle of corporate policies. The following conclusions are drawn:
+
+\subsection{Normalization (3NF)}
+The schema satisfies Third Normal Form (3NF) throughout:
+\begin{itemize}
+  \item \textbf{1NF}: All attributes hold atomic, indivisible values. No repeating groups exist.
+  \item \textbf{2NF}: Every non-key attribute is fully functionally dependent on its table's primary key. No partial dependencies exist since all tables use single-column primary keys.
+  \item \textbf{3NF}: No transitive dependencies are present. For example, department head information is stored in \texttt{Departments} rather than repeated in \texttt{Users} or \texttt{Policies}. Similarly, category descriptions reside solely in \texttt{Categories}.
+\end{itemize}
+
+\subsection{Referential Integrity}
+The schema enforces referential integrity through eight foreign key constraints spanning the seven tables. This ensures:
+\begin{enumerate}
+  \item No orphaned records — a policy version cannot reference a non-existent policy.
+  \item Consistent audit trails — every change history entry and approval ties back to a valid policy and version.
+  \item Safe cascading deletes — as demonstrated in Query 2, dependent records must be removed in correct FK dependency order before a parent record can be deleted.
+\end{enumerate}
+
+\subsection{System Capabilities}
+The 20 functional queries validate the system across four core SQL paradigms:
+\begin{itemize}
+  \item \textbf{DML (Queries 1--2)}: Lifecycle management via UPDATE and cascading DELETE.
+  \item \textbf{Multi-Table JOINs (Queries 4, 6, 7, 8, 9, 10)}: Linking up to three tables to produce human-readable reports replacing FK IDs with names.
+  \item \textbf{Aggregation (Queries 11--15)}: GROUP BY, COUNT, AVG, and MAX for governance dashboards.
+  \item \textbf{Subqueries (Queries 16--20)}: IN, NOT IN, and HAVING-based subqueries for advanced filtering.
+\end{itemize}
+
+The \textit{Policy and Rule Change Tracking System} provides a scalable foundation that can be extended with role-based access control (RBAC), automated version-increment triggers, and integration with document management systems to form a complete enterprise governance platform.
+
+% ============================================================
+% REFERENCES
+% ============================================================
+\begin{thebibliography}{9}
+
+\bibitem{ramakrishnan}
+R.~Ramakrishnan and J.~Gehrke,
+\textit{Database Management Systems}, 3rd~ed.
+New York: McGraw-Hill, 2002.
+
+\bibitem{silberschatz}
+A.~Silberschatz, H.~F.~Korth, and S.~Sudarshan,
+\textit{Database System Concepts}, 7th~ed.
+New York: McGraw-Hill Education, 2019.
+
+\bibitem{oracle}
+Oracle Corporation,
+``Oracle Database SQL Language Reference, 19c,''
+\textit{Oracle Documentation},
+2019. [Online]. Available: \url{https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/}
+
+\bibitem{codd}
+E.~F.~Codd,
+``A relational model of data for large shared data banks,''
+\textit{Commun. ACM}, vol.~13, no.~6, pp.~377--387, Jun. 1970.
+
+\bibitem{ieee}
+IEEE,
+``IEEE Template for IEEEtran,''
+\textit{IEEE Author Center},
+2023. [Online]. Available: \url{https://www.ieee.org/conferences/publishing/templates.html}
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Policy & Rule Change Tracking | DBMS Project</title>
+  <meta name="description" content="A professional dashboard showcasing the Policy and Rule Change Tracking DBMS project — ER Diagram, Database Tables, and 20 SQL Queries with pre-computed outputs." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════ NAVIGATION ═══════════════════════ -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="nav-logo">◈</span>
+        <span class="nav-title">PolicyTrack</span>
+        <span class="nav-badge">2CS518CC24</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#er-diagram" class="nav-link">ER Diagram</a></li>
+        <li><a href="#tables" class="nav-link">Tables</a></li>
+        <li><a href="#queries" class="nav-link">20 Queries</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════ HERO SECTION ═══════════════════════ -->
+  <section id="hero">
+    <div class="hero-grid-bg" aria-hidden="true"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="eyebrow-line"></span>
+        <span class="eyebrow-text">DBMS Academic Project · SEM 6</span>
+        <span class="eyebrow-line"></span>
+      </div>
+      <h1 class="hero-title">
+        <span class="hero-title-line">POLICY &</span>
+        <span class="hero-title-line accent">RULE CHANGE</span>
+        <span class="hero-title-line">TRACKING</span>
+      </h1>
+      <p class="hero-subtitle">A professional enterprise dashboard for auditing, versioning, and governing organizational policies — built on a normalized relational schema with full change history tracking.</p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-number" data-target="7">0</span>
+          <span class="stat-label">Database Tables</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="20">0</span>
+          <span class="stat-label">SQL Queries</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="5">0</span>
+          <span class="stat-label">Departments</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="64">0</span>
+          <span class="stat-label">Total Records</span>
+        </div>
+      </div>
+      <div class="hero-cta">
+        <a href="#er-diagram" class="btn-primary">Explore Schema <span class="btn-arrow">→</span></a>
+        <a href="#queries" class="btn-ghost">View 20 Queries</a>
+      </div>
+    </div>
+    <div class="hero-scroll-hint" aria-hidden="true">
+      <span class="scroll-text">SCROLL</span>
+      <span class="scroll-line"></span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ ER DIAGRAM SECTION ═══════════════════════ -->
+  <section id="er-diagram" class="section">
+    <div class="section-header">
+      <div class="section-label-row">
+        <span class="section-rule"></span>
+        <span class="section-label">SCHEMA DESIGN</span>
+        <span class="section-rule"></span>
+      </div>
+      <h2 class="section-title">Entity-Relationship Diagram</h2>
+      <p class="section-desc">Seven interrelated tables forming a normalized relational schema for enterprise policy lifecycle management.</p>
+    </div>
+
+    <div class="er-layout">
+      <div class="er-diagram-container reveal">
+        <div class="diagram-toolbar">
+          <span class="diagram-label">◈ ER Diagram · Full Schema</span>
+          <button id="diagram-zoom-btn" class="toolbar-btn" title="Toggle fullscreen">⛶ Expand</button>
+        </div>
+        <div class="mermaid" id="er-mermaid">
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#1a1a1a", "primaryTextColor": "#F5F0E8", "primaryBorderColor": "#6EE7B7", "lineColor": "#6EE7B7", "secondaryColor": "#111111", "tertiaryColor": "#0a0a0a", "edgeLabelBackground": "#1a1a1a", "fontSize": "14px"}, "er": {"diagramPadding": 30, "layoutDirection": "LR", "minEntityWidth": 100, "minEntityHeight": 75, "entityPadding": 15, "useMaxWidth": true}}}%%
+erDiagram
+    Departments {
+        INT DEPT_ID PK
+        VARCHAR DEPT_NAME
+        VARCHAR DEPT_HEAD
+        DATE CREATED_AT
+    }
+    Users {
+        INT USER_ID PK
+        VARCHAR USERNAME
+        VARCHAR EMAIL
+        VARCHAR ROLE
+        INT DEPT_ID FK
+        DATE CREATED_AT
+    }
+    Categories {
+        INT Category_ID PK
+        VARCHAR Category_Name
+        VARCHAR Description
+    }
+    Policies {
+        INT Policy_ID PK
+        VARCHAR Policy_Name
+        INT Category_ID FK
+        INT DEPT_ID FK
+        VARCHAR Status
+        INT Created_By FK
+        DATE Effective_Date
+    }
+    PolicyVersions {
+        INT Version_ID PK
+        INT Policy_ID FK
+        VARCHAR Version_Number
+        VARCHAR Changes_Made
+        INT Modified_By FK
+        TIMESTAMP Modified_At
+        CHAR Is_Current
+    }
+    ChangeHistory {
+        INT Change_ID PK
+        INT Policy_ID FK
+        INT Version_ID FK
+        VARCHAR Type
+        VARCHAR Description
+        INT Changed_By FK
+        TIMESTAMP Changed_At
+    }
+    Approvals {
+        INT Approval_ID PK
+        INT Policy_ID FK
+        INT Version_ID FK
+        INT Approver_ID FK
+        VARCHAR Status
+        VARCHAR Comments
+        DATE Approval_Date
+    }
+
+    Departments ||--o{ Users : "employs"
+    Departments ||--o{ Policies : "owns"
+    Categories ||--o{ Policies : "classifies"
+    Users ||--o{ Policies : "creates"
+    Policies ||--o{ PolicyVersions : "has versions"
+    Policies ||--o{ ChangeHistory : "has history"
+    Policies ||--o{ Approvals : "receives"
+    PolicyVersions ||--o{ ChangeHistory : "linked to"
+    PolicyVersions ||--o{ Approvals : "linked to"
+    Users ||--o{ PolicyVersions : "modifies"
+    Users ||--o{ ChangeHistory : "authors"
+    Users ||--o{ Approvals : "approves"
+        </div>
+      </div>
+
+      <!-- 3NF Architecture Panel -->
+      <div class="schema-info-panel reveal">
+        <div class="info-panel-header">
+          <span class="panel-icon">🏗</span>
+          <h3>Schema Architecture</h3>
+        </div>
+        <div class="info-badge-row">
+          <span class="arch-badge">3NF Compliant</span>
+          <span class="arch-badge">Referential Integrity</span>
+        </div>
+        <div class="info-block">
+          <h4>Third Normal Form (3NF)</h4>
+          <p>Every table is designed to satisfy 1NF, 2NF, and 3NF — eliminating all transitive dependencies. <strong>No data is duplicated</strong> across tables; departments, users, and categories are each stored once and referenced by foreign keys.</p>
+        </div>
+        <div class="info-block">
+          <h4>Cascading Referential Integrity</h4>
+          <p>All child entities (<code>PolicyVersions</code>, <code>ChangeHistory</code>, <code>Approvals</code>) reference the parent <code>Policies</code> table via <strong>foreign key constraints</strong>. Query 2 demonstrates a manual cascade delete that removes <em>all</em> dependent rows across 3 child tables before deleting the archived policy — preserving data integrity.</p>
+        </div>
+        <div class="info-block">
+          <h4>Relationship Summary</h4>
+          <ul class="rel-list">
+            <li><span class="rel-badge">1:N</span> Department → Users, Policies</li>
+            <li><span class="rel-badge">1:N</span> Category → Policies</li>
+            <li><span class="rel-badge">1:N</span> Policy → Versions, History, Approvals</li>
+            <li><span class="rel-badge">1:N</span> User → Policies, Versions, History, Approvals</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h4>Table Index</h4>
+          <div class="table-index-grid">
+            <div class="table-index-item"><span class="ti-dot core"></span>Departments</div>
+            <div class="table-index-item"><span class="ti-dot core"></span>Users</div>
+            <div class="table-index-item"><span class="ti-dot core"></span>Categories</div>
+            <div class="table-index-item"><span class="ti-dot track"></span>Policies</div>
+            <div class="table-index-item"><span class="ti-dot track"></span>PolicyVersions</div>
+            <div class="table-index-item"><span class="ti-dot track"></span>ChangeHistory</div>
+            <div class="table-index-item"><span class="ti-dot track"></span>Approvals</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ TABLES SECTION ═══════════════════════ -->
+  <section id="tables" class="section">
+    <div class="section-header">
+      <div class="section-label-row">
+        <span class="section-rule"></span>
+        <span class="section-label">DATABASE CONTENTS</span>
+        <span class="section-rule"></span>
+      </div>
+      <h2 class="section-title">Database Tables Viewer</h2>
+      <p class="section-desc">Browse all 7 tables with their populated records. Status and role fields are color-coded for clarity.</p>
+    </div>
+
+    <div class="tables-container reveal">
+      <div class="table-tabs" id="table-tabs" role="tablist"></div>
+      <div class="table-meta-bar">
+        <span id="table-row-count" class="row-count-badge"></span>
+        <span id="dml-state-badge" class="dml-state-badge" style="display:none;"></span>
+      </div>
+      <div class="table-grid-wrapper">
+        <div id="table-display"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ QUERIES SECTION ═══════════════════════ -->
+  <section id="queries" class="section">
+    <div class="section-header">
+      <div class="section-label-row">
+        <span class="section-rule"></span>
+        <span class="section-label">SQL SHOWCASE</span>
+        <span class="section-rule"></span>
+      </div>
+      <h2 class="section-title">The 20 Working Queries</h2>
+      <p class="section-desc">Each query includes its business purpose, exact SQL code, and pre-computed output from the dummy dataset. DML queries include an interactive execution simulator.</p>
+      <div class="query-search-bar">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="query-search" placeholder="Search queries by title, type, or keyword…" autocomplete="off" />
+        <span id="search-clear" class="search-clear" style="display:none;">✕</span>
+      </div>
+    </div>
+
+    <div class="queries-layout">
+      <!-- Left Sidebar Navigator -->
+      <aside class="query-sidebar" id="query-sidebar">
+        <div class="sidebar-header">QUERY INDEX</div>
+        <ul class="sidebar-list" id="sidebar-list"></ul>
+      </aside>
+
+      <!-- Query Cards -->
+      <div class="query-cards-area" id="query-cards-area"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ ABOUT / FOOTER ═══════════════════════ -->
+  <section id="about" class="section about-section">
+    <div class="section-header">
+      <div class="section-label-row">
+        <span class="section-rule"></span>
+        <span class="section-label">PROJECT INFO</span>
+        <span class="section-rule"></span>
+      </div>
+      <h2 class="section-title">About This Project</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-card reveal">
+        <div class="about-card-icon">📋</div>
+        <h3>Assignment Details</h3>
+        <ul class="about-list">
+          <li><span class="about-key">Course</span><span class="about-val">2CS518CC24 · DBMS</span></li>
+          <li><span class="about-key">Semester</span><span class="about-val">Semester 6</span></li>
+          <li><span class="about-key">Project</span><span class="about-val">Policy & Rule Change Tracking</span></li>
+          <li><span class="about-key">Database</span><span class="about-val">Oracle SQL</span></li>
+        </ul>
+      </div>
+      <div class="about-card reveal">
+        <div class="about-card-icon">👥</div>
+        <h3>Team Members</h3>
+        <ul class="about-list">
+          <li><span class="about-key">Heet Yadav</span><span class="about-val role-badge">Admin · HR Head</span></li>
+          <li><span class="about-key">Harshil Kanani</span><span class="about-val role-badge">Policy Manager</span></li>
+          <li><span class="about-key">Kevin Hingu</span><span class="about-val role-badge">Auditor · Legal</span></li>
+          <li><span class="about-key">Om Jani</span><span class="about-val role-badge">IT Head</span></li>
+          <li><span class="about-key">Gauri Mathur</span><span class="about-val role-badge">Ops Head</span></li>
+        </ul>
+      </div>
+      <div class="about-card reveal">
+        <div class="about-card-icon">🗄</div>
+        <h3>Schema Overview</h3>
+        <ul class="about-list">
+          <li><span class="about-key">Tables</span><span class="about-val">7</span></li>
+          <li><span class="about-key">Relationships</span><span class="about-val">12 FK constraints</span></li>
+          <li><span class="about-key">Normalization</span><span class="about-val">3NF</span></li>
+          <li><span class="about-key">Total Records</span><span class="about-val">64 rows</span></li>
+          <li><span class="about-key">Query Types</span><span class="about-val">DML, SELECT, JOIN, GROUP BY, Subquery</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-logo">◈ PolicyTrack</span>
+        <span class="footer-course">2CS518CC24 · DBMS Academic Project · 2026</span>
+      </div>
+      <div class="footer-note">Built with Vanilla HTML · CSS · JavaScript &nbsp;|&nbsp; Schema: Oracle SQL</div>
+    </div>
+  </footer>
+
+  <!-- Back to Top Button -->
+  <button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+  <!-- ER Diagram Fullscreen Modal -->
+  <div id="er-modal" class="er-modal" role="dialog" aria-modal="true" style="display:none;">
+    <div class="er-modal-backdrop" id="er-modal-backdrop"></div>
+    <div class="er-modal-content">
+      <div class="er-modal-toolbar">
+        <span class="diagram-label">◈ ER Diagram · Full Schema</span>
+        <button id="er-modal-close" class="toolbar-btn">✕ Close</button>
+      </div>
+      <div id="er-modal-diagram"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
