@@ -13,6 +13,10 @@ A comprehensive database management system designed to track, version, and gover
 * **web** : The source code for the interactive project dashboard.
 * **docs** : Project documentation including the final report and ER diagram.
 
+### 🌐 Live Dashboard Preview
+Want to see the project in action right now? Click the link below to view the interactive web dashboard directly:
+👉 **[View Live Dashboard Preview](https://htmlpreview.github.io/?https://github.com/HeetYadav/DBMS-Policy-Tracking-System/blob/main/web/index.html)**
+
 ### Getting Started
 To run the web dashboard, simply open the index.html file located in the web folder in any web browser.
 To explore the database, execute the SQL script located in the database folder in any Oracle SQL compatible environment.
